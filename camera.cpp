@@ -47,8 +47,7 @@ void Camera::stop(){
     if(updateThread.joinable()){
         updateThread.join();
     }
-    std::cout << "Camera " << cameraNumber << ": Number of Updates " << updateCount << "\n";
-    std::cout << "Destructor Called \n";
+    std::cout << "Camera " << cameraNumber << " Halted: Number of Updates " << updateCount << "\n";
 }
 
 cv::Mat3b Camera::getFrame(){
