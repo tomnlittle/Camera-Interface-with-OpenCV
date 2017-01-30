@@ -12,15 +12,15 @@ Once Initialised with the correct attributes (or none at all if you like) the li
 
 Simply Cmake the library as you would any normal OpenCV project, be sure to include into your add executable. 
 
-'''
+```
 
     libs/camera.h libs/camera.cpp
-    
-'''
+
+```
 
 In the above example this is the cmake file 
 
-'''
+```
 
     cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
     project(CameraInterface)
@@ -29,11 +29,11 @@ In the above example this is the cmake file
     find_package( OpenCV REQUIRED )
     find_package( Threads )
 
-    **add_executable(run example.cpp libs/camera.h libs/camera.cpp )**
+    add_executable(run example.cpp libs/camera.h libs/camera.cpp )
 
     target_link_libraries(run ${OpenCV_LIBS} ${CMAKE_THREAD_LIBS_INIT})
 
-'''
+```
 
 
 
