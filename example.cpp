@@ -25,13 +25,13 @@ void command();
 
 int main(void){
     cv::Size size(600,400);
-    Camera cam(0, 1, true, size);    //Camera ID 0, with 0 noise reduction
+    Camera cam;    //Camera ID 0,
     std::thread commandsThread(command);
     printf("CV Version : %s \n", CV_VERSION); //prints the openCV version
     while(run){
-        cv::Mat3b frame = cam.getFrame();
+        cv::Mat3b frame = cam.getNewFrame();
         cv::imshow("Camera", frame);
-        cv::waitKey(UPDATE_FREQUENCY);
+        cv::waitKey(1);
     }
     commandsThread.join();
     return 0;

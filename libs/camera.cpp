@@ -25,13 +25,18 @@ Camera::Camera(int num, float noise, bool flip, cv::Size photoSize){
     size = photoSize;
     threadActive = true;
     updateCount = 0;
+    frameNum = 0;
     noise_reduction_level = noise;
     shouldFlip = flip;
     updateThread = std::thread(&Camera::update, this);
 }
 
 Camera::~Camera(){
-    stop();
+    threadActive = false;
+    if(updateThread.joinable()){
+        updateThread.join();
+    }
+    std::cout << "Camera " << cameraNumber << " Halted: Number of Updates " << updateCount << "\n";
 }
 
 void Camera::update(){
@@ -71,26 +76,21 @@ void Camera::update(){
             cv::flip(in_frame, flipped, 1);
             flipped.copyTo(in_frame);
         }
-        
+
         in_frame.copyTo(frame);
-        usleep(UPDATE_FREQUENCY*100.00);
         updateCount++;
     }
 }
 
-void Camera::stop(){
-    threadActive = false;
-    if(updateThread.joinable()){
-        updateThread.join();
-    }
-    std::cout << "Camera " << cameraNumber << " Halted: Number of Updates " << updateCount << "\n";
-}
-
 cv::Mat3b Camera::getFrame(){
     while(frame.empty()); //blocking operation while the first frame comes through
+    frameNum = updateCount;
     return frame;
 }
 
-int Camera::getCount(){
-    return updateCount;
+cv::Mat3b Camera::getNewFrame(){
+    while(frame.empty()); //blocking operation while the first frame comes through
+    while(frameNum == updateCount); //blocking operation which makes the system wait for new frame
+    frameNum = updateCount;
+    return frame;
 }

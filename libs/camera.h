@@ -25,17 +25,20 @@
 #include <unistd.h>
 #include <stdint.h>
 
-#define UPDATE_FREQUENCY                                        20.00 
-
 class Camera {
     public:
-        Camera(int num, float noise = 0, bool mirror = false, cv::Size photoSize = cv::Size(0,0));
+        Camera(int num = 0, float noise = 0, bool mirror = false, cv::Size photoSize = cv::Size(0,0));
         ~Camera();
-        cv::Mat3b getFrame();
+
+        cv::Mat3b getFrame();   //returns the last completed frame
+
+        /*
+            Always returns a new frame, whereas getFrame will always load the current frame this function will block
+            until a new frame can be returned.
+        */
+        cv::Mat3b getNewFrame(); 
     private:
         void update();
-        void stop();
-        int getCount();
 
         std::thread updateThread; 
 
@@ -45,6 +48,7 @@ class Camera {
 
         int cameraNumber;
         int updateCount;
+        int frameNum; //Used to keep track of the frame that was last returned
         bool threadActive;
         bool shouldFlip;
         float noise_reduction_level;
