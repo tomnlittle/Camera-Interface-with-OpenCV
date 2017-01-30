@@ -1,0 +1,10 @@
+
+*.cmake
+
+CMakeCache.txt
+
+/CMakeFiles/
+
+Makefile
+
+run

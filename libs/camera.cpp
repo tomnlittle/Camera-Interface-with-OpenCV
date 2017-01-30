@@ -19,17 +19,15 @@
  
 #include "camera.h"
 
-Camera::Camera(int num, int noise, cv::Size photoSize){
+Camera::Camera(int num, float noise, bool flip, cv::Size photoSize){
     cameraNumber = num;
     camera = cv::VideoCapture(cameraNumber);
     size = photoSize;
-
-    camera >> frame;
     threadActive = true;
     updateCount = 0;
     noise_reduction_level = noise;
-   // if(!camera.isOpened()) return 1;
-   updateThread = std::thread(&Camera::update, this);
+    shouldFlip = flip;
+    updateThread = std::thread(&Camera::update, this);
 }
 
 Camera::~Camera(){
@@ -37,26 +35,45 @@ Camera::~Camera(){
 }
 
 void Camera::update(){
-    cv::Mat3b in_frame;
-    cv::Mat3b resized_frame;
-    cv::Mat3b denoised_frame;
     cv::Size emptySize(0,0);
-
     while(threadActive){
+        cv::Mat3b in_frame;
         camera >> in_frame;
 
         if(size != emptySize){
+            cv::Mat3b resized_frame;
             cv::resize(in_frame, resized_frame, size, 0, 0, cv::INTER_CUBIC);
-            in_frame = resized_frame;
+            resized_frame.copyTo(in_frame);
         } 
 
-        if(noise_reduction_level != 0){
-            cv::fastNlMeansDenoising(in_frame, denoised_frame, noise_reduction_level, 11, 5);
-            in_frame = denoised_frame;
+        if(noise_reduction_level > 0){
+            cv::Mat bgr[3];   
+            cv::split(in_frame, bgr);
+
+            std::vector<cv::Mat> array_of_Mats;
+
+            cv::fastNlMeansDenoising(bgr[0], bgr[0], noise_reduction_level);
+            cv::fastNlMeansDenoising(bgr[1], bgr[1], noise_reduction_level);
+            cv::fastNlMeansDenoising(bgr[2], bgr[2], noise_reduction_level);
+
+            array_of_Mats.push_back(bgr[0]);
+            array_of_Mats.push_back(bgr[1]);
+            array_of_Mats.push_back(bgr[2]);
+
+            cv::Mat denoised_frame;
+            cv::merge(array_of_Mats, denoised_frame);
+
+            denoised_frame.copyTo(in_frame);
         } 
+
+        if(shouldFlip){
+            cv::Mat3b flipped;
+            cv::flip(in_frame, flipped, 1);
+            flipped.copyTo(in_frame);
+        }
         
+        in_frame.copyTo(frame);
         usleep(UPDATE_FREQUENCY*100.00);
-        frame = in_frame;
         updateCount++;
     }
 }
@@ -70,6 +87,7 @@ void Camera::stop(){
 }
 
 cv::Mat3b Camera::getFrame(){
+    while(frame.empty()); //blocking operation while the first frame comes through
     return frame;
 }
 

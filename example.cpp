@@ -1,5 +1,5 @@
 /*
- * Created on Thu Jan 26 2017 
+ * Created on Sat Jan 28 2017 
  *
  * Copyright (c) 2017 Thomas Northall-Little
  *
@@ -16,33 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-#include <stdio.h>
-#include <opencv2/opencv.hpp>
-#include <thread>
+
 #include <iostream>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdint.h>
+#include "libs/camera.h"
 
-#define UPDATE_FREQUENCY                                        20.00 
+static bool run = true;
+void command();
 
-class Camera {
-    public:
-        Camera(int cameraNumber, int noise, cv::Size);
-        ~Camera();
-        cv::Mat3b getFrame();
-    private:
-        void update();
-        void stop();
-        int getCount();
+int main(void){
+    cv::Size size(600,400);
+    Camera cam(0, 1, true, size);    //Camera ID 0, with 0 noise reduction
+    std::thread commandsThread(command);
+    printf("CV Version : %s \n", CV_VERSION); //prints the openCV version
+    while(run){
+        cv::Mat3b frame = cam.getFrame();
+        cv::imshow("Camera", frame);
+        cv::waitKey(UPDATE_FREQUENCY);
+    }
+    commandsThread.join();
+    return 0;
+}
 
-        cv::Mat3b frame;
-        int cameraNumber;
-        bool threadActive;
-        std::thread updateThread;  
-        cv::VideoCapture camera;  
-        int updateCount;
-        int noise_reduction_level;
-        cv::Size size;
-};
+void command(){
+    std::string hold_value = " ";
+    printf("Press any key to close\n");
+    std::cin >> hold_value;	
+    run = false;
+    return;
+}
