@@ -27,7 +27,7 @@
 
 class Camera {
     public:
-        Camera(int num = 0, float noise = 0, bool mirror = false, cv::Size photoSize = cv::Size(0,0));
+        Camera( int camID = 0, float noise = 0, bool mirror = false, cv::Size photoSize = cv::Size(0,0));
         ~Camera();
 
         cv::Mat3b getFrame();   //returns the last completed frame
@@ -37,6 +37,13 @@ class Camera {
             until a new frame can be returned.
         */
         cv::Mat3b getNewFrame(); 
+
+        /*
+            Will return the average of a number of frames, useful for noise reduction
+        */
+
+        cv::Mat3b getAveragedFrame(int);
+
     private:
         void update();
 

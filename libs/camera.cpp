@@ -19,9 +19,9 @@
  
 #include "camera.h"
 
-Camera::Camera(int num, float noise, bool flip, cv::Size photoSize){
-    cameraNumber = num;
-    camera = cv::VideoCapture(cameraNumber);
+Camera::Camera(int camID, float noise, bool flip, cv::Size photoSize){
+    cameraNumber = camID;
+    camera = cv::VideoCapture(cameraNumber);    
     size = photoSize;
     threadActive = true;
     updateCount = 0;
@@ -93,4 +93,15 @@ cv::Mat3b Camera::getNewFrame(){
     while(frameNum == updateCount); //blocking operation which makes the system wait for new frame
     frameNum = updateCount;
     return frame;
+}
+
+cv::Mat3b Camera::getAveragedFrame(int numFrames){
+    std::vector<cv::Mat3b> frames;
+    frames[0] = getFrame();
+    for(int i = 1; i < numFrames; i++){
+        frames[i] = getNewFrame();
+    }
+
+    return frames[0];
+
 }

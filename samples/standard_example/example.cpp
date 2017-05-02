@@ -24,8 +24,7 @@ static bool run = true;
 void command();
 
 int main(void){
-    cv::Size size(600,400);
-    Camera cam;    //Camera ID 0,
+    Camera cam(0);    //Camera ID 0,
     std::thread commandsThread(command);
     printf("CV Version : %s \n", CV_VERSION); //prints the openCV version
     while(run){
