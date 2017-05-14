@@ -16,14 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-#include <stdio.h>
+
 #include <opencv2/opencv.hpp>
 #include <thread>
 #include <iostream>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdint.h>
 
 class Camera {
     public:

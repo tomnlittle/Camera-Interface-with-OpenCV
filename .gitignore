@@ -8,3 +8,17 @@ CMakeCache.txt
 Makefile
 
 run
+
+*.txt
+
+*.make
+
+*.marks
+
+samples/stereo/CMakeFiles/Makefile2
+
+*.bin
+
+*.out
+
+samples/stereo/CMakeFiles/
