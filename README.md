@@ -38,7 +38,7 @@ In the above example this is the cmake file
 
 
 
-##TODO
-- Increase the effeciency on noise reduction as it can be pretty unsuable on fluid videos
+## TODO
+- Increase the efficiency on noise reduction as it can be pretty unsuable on fluid videos
 - Add Call and Run support - essentially be able to just call the library and have it work out which port the camera is on
 
